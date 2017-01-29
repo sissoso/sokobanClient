@@ -28,13 +28,13 @@ public CLI_client() {
 
 	private void readInputsAndSend(BufferedReader in, PrintWriter out,String exitStr){
 		try {
-		String line;
-
-		while(!(line=in.readLine()).equals(exitStr)){
-		//System.out.println(line);
+		String line="";
+		do{line=in.readLine();
+		if(line==null)
+			break;
 		out.println(line);
 		out.flush();
-		}
+		}while(!(line.equals(exitStr)));
 
 		} catch (IOException e) { e.printStackTrace();}
 		}
@@ -53,6 +53,7 @@ public CLI_client() {
 		}
 		public void start(String ip, int port){
 			try {
+				String exitgame="exitgame";
 			Socket theServer=new Socket(ip, port);
 			System.out.println("connected to server\n");
 			//user input
@@ -61,16 +62,16 @@ public CLI_client() {
 			BufferedReader serverInput=new BufferedReader(new InputStreamReader(theServer.getInputStream()));
 			PrintWriter outToServer=new PrintWriter(theServer.getOutputStream());
 			PrintWriter outToScreen=new PrintWriter(System.out);
-			Thread t1 = aSyncReadInputsAndSend(userInput,outToServer,"exitgame"); // different thread
+			Thread t1 = aSyncReadInputsAndSend(userInput,outToServer,exitgame); // different thread
 			Thread t2 = aSyncReadInputsAndSend(serverInput,outToScreen,"bye"); // different thread
 			t1.join(); t2.join(); // wait for threads to end
-			//t2.join();t1.join();
 
 			userInput.close();
 			serverInput.close();
 			outToServer.close();
 			outToScreen.close();
 			theServer.close();
+
 
 
 			} catch (UnknownHostException e) {
